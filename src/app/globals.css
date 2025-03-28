@@ -1,0 +1,149 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 240 10% 3.9%;
+    --foreground: 0 0% 98%;
+    --card: 240 10% 3.9%;
+    --card-foreground: 0 0% 98%;
+    --popover: 240 10% 3.9%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 0 0% 98%;
+    --primary-foreground: 240 5.9% 10%;
+    --secondary: 240 3.7% 15.9%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 240 3.7% 15.9%;
+    --muted-foreground: 240 5% 64.9%;
+    --accent: 240 3.7% 15.9%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 3.7% 15.9%;
+    --input: 240 3.7% 15.9%;
+    --ring: 240 4.9% 83.9%;
+    --radius: 0.25rem;
+
+    /* FinViz Colors */
+    --finviz-red: 0 75% 52%;
+    --finviz-green: 145 63% 42%;
+    --finviz-neutral: 0 0% 50%;
+    --finviz-dark-bg: 230 10% 16%;
+    --finviz-header-bg: 220 13% 18%;
+    --finviz-text: 0 0% 100%;
+    --finviz-text-secondary: 0 0% 70%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-family: var(--font-lato), sans-serif;
+  }
+}
+
+@layer components {
+  /* FinViz Specific Components */
+  .heatmap-container {
+    @apply w-full p-4 bg-[#242632] rounded;
+  }
+
+  .heatmap-header {
+    @apply bg-[#2b2d3c] text-white text-xs uppercase font-bold py-1 px-2;
+  }
+
+  .sector-label {
+    @apply text-xs text-white uppercase bg-[#454a58] px-2 py-1 font-bold mb-1;
+  }
+
+  .stock-cell {
+    @apply relative p-2 text-center transition-all duration-200 cursor-pointer min-h-[60px] flex flex-col justify-center;
+  }
+
+  .stock-ticker {
+    @apply font-bold text-sm;
+  }
+
+  .stock-change {
+    @apply text-xs opacity-80;
+  }
+
+  /* Stock change percentages - more realistic FinViz colors */
+  .change-negative-3 {
+    @apply bg-[#be0000];
+  }
+
+  .change-negative-2 {
+    @apply bg-[#d54b4b];
+  }
+
+  .change-negative-1 {
+    @apply bg-[#e07373];
+  }
+
+  .change-neutral {
+    @apply bg-[#61697a];
+  }
+
+  .change-positive-1 {
+    @apply bg-[#61ad61];
+  }
+
+  .change-positive-2 {
+    @apply bg-[#44a344];
+  }
+
+  .change-positive-3 {
+    @apply bg-[#0d860d];
+  }
+
+  /* Hover effects */
+  .stock-cell:hover {
+    @apply ring-1 ring-white/30 z-10 shadow-lg;
+    transform: scale(1.05);
+  }
+
+  /* Large stock boxes for major companies */
+  .large-stock-box {
+    @apply col-span-2 row-span-2 p-6;
+  }
+
+  .large-stock-box .stock-ticker {
+    @apply text-2xl mb-2;
+  }
+
+  .large-stock-box .stock-change {
+    @apply text-base opacity-90;
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .stock-cell {
+      @apply p-1 min-h-[50px];
+    }
+
+    .stock-ticker {
+      @apply text-xs;
+    }
+
+    .stock-change {
+      @apply text-[10px];
+    }
+
+    .large-stock-box {
+      @apply p-2;
+    }
+
+    .large-stock-box .stock-ticker {
+      @apply text-base mb-1;
+    }
+
+    .large-stock-box .stock-change {
+      @apply text-xs;
+    }
+  }
+}
