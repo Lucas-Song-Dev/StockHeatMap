@@ -3,132 +3,9 @@
 import { useEffect, useState } from "react";
 import StockDetails from "./StockDetails";
 import { fetchStockData } from "../services/stockService";
-
-// Define types for our data
-type StockData = {
-  ticker: string;
-  name?: string;
-  price?: number;
-  change: number;
-  marketCap?: number;
-  sector: string;
-  industry?: string;
-  isLarge?: boolean;
-};
-
-type SectorData = {
-  name: string;
-  stocks: StockData[];
-};
-
-// Sample data for the heatmap based on the provided images
-const sampleData: SectorData[] = [
-  {
-    name: "TECHNOLOGY",
-    stocks: [
-      {
-        ticker: "MSFT",
-        change: 0.16,
-        sector: "SOFTWARE - INFRASTRUCTURE",
-        isLarge: true,
-      },
-      { ticker: "ORCL", change: -1.37, sector: "SOFTWARE - INFRASTRUCTURE" },
-      { ticker: "ADBE", change: -0.42, sector: "SOFTWARE - INFRASTRUCTURE" },
-      { ticker: "PLTR", change: -2.37, sector: "SOFTWARE - INFRASTRUCTURE" },
-      { ticker: "PANW", change: -5.69, sector: "SOFTWARE - INFRASTRUCTURE" },
-      { ticker: "CRWD", change: -1.31, sector: "SOFTWARE - INFRASTRUCTURE" },
-      {
-        ticker: "AAPL",
-        change: 1.05,
-        sector: "CONSUMER ELECTRONICS",
-        isLarge: true,
-      },
-      {
-        ticker: "GOOG",
-        change: -1.83,
-        sector: "INTERNET CONTENT & INFORMATION",
-        isLarge: true,
-      },
-      {
-        ticker: "META",
-        change: -1.38,
-        sector: "INTERNET CONTENT & INFORMATION",
-        isLarge: true,
-      },
-      {
-        ticker: "NVDA",
-        change: -2.05,
-        sector: "SEMICONDUCTORS",
-        isLarge: true,
-      },
-      { ticker: "TSM", change: -3.03, sector: "SEMICONDUCTORS", isLarge: true },
-      { ticker: "AVGO", change: -4.06, sector: "SEMICONDUCTORS" },
-      { ticker: "AMD", change: -0.21, sector: "SEMICONDUCTORS" },
-      { ticker: "TXN", change: -2.02, sector: "SEMICONDUCTORS" },
-      { ticker: "CRM", change: -1.13, sector: "SOFTWARE - APPLICATION" },
-      { ticker: "NOW", change: -1.29, sector: "SOFTWARE - APPLICATION" },
-      { ticker: "SAP", change: 0.0, sector: "SOFTWARE - APPLICATION" },
-      { ticker: "INTU", change: 0.07, sector: "SOFTWARE - APPLICATION" },
-    ],
-  },
-  {
-    name: "CONSUMER CYCLICAL",
-    stocks: [
-      {
-        ticker: "AMZN",
-        change: 0.11,
-        sector: "INTERNET RETAIL",
-        isLarge: true,
-      },
-      {
-        ticker: "TSLA",
-        change: 0.39,
-        sector: "AUTO MANUFACTURERS",
-        isLarge: true,
-      },
-      { ticker: "TM", change: -2.8, sector: "AUTO MANUFACTURERS" },
-    ],
-  },
-  {
-    name: "COMMUNICATION SERVICES",
-    stocks: [
-      { ticker: "NFLX", change: 0.63, sector: "ENTERTAINMENT" },
-      { ticker: "DIS", change: -0.33, sector: "ENTERTAINMENT" },
-      { ticker: "T", change: 1.99, sector: "TELECOM SERVICES" },
-      { ticker: "VZ", change: 1.77, sector: "TELECOM SERVICES" },
-    ],
-  },
-  {
-    name: "HEALTHCARE",
-    stocks: [
-      {
-        ticker: "JNJ",
-        change: 0.87,
-        sector: "DRUG MANUFACTURERS - GENERAL",
-        isLarge: true,
-      },
-      { ticker: "LLY", change: -0.62, sector: "DRUG MANUFACTURERS - GENERAL" },
-      { ticker: "MRK", change: -0.58, sector: "DRUG MANUFACTURERS - GENERAL" },
-      { ticker: "PFE", change: -0.7, sector: "DRUG MANUFACTURERS - GENERAL" },
-    ],
-  },
-  {
-    name: "FINANCIAL",
-    stocks: [
-      {
-        ticker: "JPM",
-        change: -1.16,
-        sector: "BANKS - DIVERSIFIED",
-        isLarge: true,
-      },
-      { ticker: "BAC", change: -0.61, sector: "BANKS - DIVERSIFIED" },
-      { ticker: "WFC", change: -1.62, sector: "BANKS - DIVERSIFIED" },
-      { ticker: "C", change: -4.9, sector: "BANKS - DIVERSIFIED" },
-      { ticker: "MA", change: 1.55, sector: "CREDIT SERVICES", isLarge: true },
-      { ticker: "V", change: 1.65, sector: "CREDIT SERVICES", isLarge: true },
-    ],
-  },
-];
+import { StockData, SectorData } from "../types";
+import { sampleData } from "@/sample/sampleData";
+import Toggle from "./ToggleButton";
 
 // Helper function to get color class based on percentage change
 const getColorClass = (change: number): string => {
@@ -147,7 +24,14 @@ export default function HeatMap() {
   const [hoveringStock, setHoveringStock] = useState<StockData | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [useSectorRelative, setUseSectorRelative] = useState(false);
+  const [maxSectorMarketCap, setMaxSectorMarketCap] = useState<
+    Record<string, number>
+  >({});
 
+  const handleToggleSize = () => {
+    setUseSectorRelative((prev) => !prev);
+  };
   // Format percentage with sign
   const formatPercentage = (value: number): string => {
     const sign = value > 0 ? "+" : "";
@@ -183,8 +67,14 @@ export default function HeatMap() {
 
         // Call the API service function
         const data = await fetchStockData();
-        console.log("🚀 ~ loadStockData ~ data:", data);
         setHeatmapData(data);
+
+        const sectorMaxCaps: Record<string, number> = {};
+        data.forEach((sector) => {
+          console.log("🚀 ~ data.forEach ~ sector:", sector);
+          sectorMaxCaps[sector.name] = sector.stocks[0].marketCap || 1;
+        });
+        setMaxSectorMarketCap(sectorMaxCaps);
       } catch (err) {
         setError("Failed to load stock data. Please try again later.");
         console.error("Error loading stock data:", err);
@@ -238,8 +128,14 @@ export default function HeatMap() {
 
   return (
     <div className="heatmap-container">
-      {/* Map legend */}
-      <div className="flex justify-center mb-4 mt-2 gap-2">
+      <div className="flex justify-left mb-4 mt-2 gap-2">
+        <Toggle
+          isToggledOn={useSectorRelative}
+          onToggle={handleToggleSize}
+          labelOn="Click to compare to absolute"
+          labelOff="Click to compare to sector"
+        />
+        <div className="flex-grow"></div>
         <div className="flex items-center">
           <div className="w-4 h-4 change-negative-3 rounded mr-1"></div>
           <span className="text-xs">-3%</span>
@@ -271,7 +167,7 @@ export default function HeatMap() {
       </div>
 
       {/* Main heatmap grid */}
-      <div className="grid grid-cols-1 md:grid-cols-5 gap-1">
+      <div className="grid grid-cols-[repeat(auto-fill,_minmax(300px,_1fr))] gap-1">
         {heatmapData.map((sector, sectorIndex) => {
           // Group stocks by subsector
           const subsectors: Record<string, StockData[]> = {};
@@ -291,30 +187,38 @@ export default function HeatMap() {
               {Object.entries(subsectors).map(
                 ([subsectorName, stocks], subIndex) => (
                   <div key={subIndex} className="mb-1">
-                    <div className="heatmap-header mb-1 text-[10px]">
+                    {/* <div className="heatmap-header mb-1 text-[10px]">
                       {subsectorName}
-                    </div>
+                    </div> */}
 
                     {/* Stocks Grid */}
-                    <div className="grid grid-cols-3 gap-[1px]">
-                      {stocks.map((stock, stockIndex) => (
-                        <div
-                          key={stockIndex}
-                          className={`
-                          stock-cell
-                          ${getColorClass(stock.change)}
-                          ${stock.isLarge ? "large-stock-box" : ""}
-                        `}
-                          onClick={() => handleStockClick(stock)}
-                          onMouseEnter={() => handleMouseEnter(stock)}
-                          onMouseLeave={handleMouseLeave}
-                        >
-                          <div className="stock-ticker">{stock.ticker}</div>
-                          <div className="stock-change">
-                            {formatPercentage(stock.change)}
+                    <div className="flex flex-wrap">
+                      {stocks.map((stock, stockIndex) => {
+                        const maxCap = maxSectorMarketCap[subsectorName] || 1;
+                        const relativeSize = useSectorRelative
+                          ? ((stock.marketCap || 10) / maxCap) * 100 + 50
+                          : Math.sqrt(stock.marketCap || 100000) / 5000;
+                        return (
+                          <div
+                            key={stockIndex}
+                            className={`stock-cell ${getColorClass(
+                              stock.change
+                            )}`}
+                            style={{
+                              width: `${relativeSize}px`,
+                              height: `${relativeSize}px`,
+                            }}
+                            onClick={() => handleStockClick(stock)}
+                            onMouseEnter={() => handleMouseEnter(stock)}
+                            onMouseLeave={handleMouseLeave}
+                          >
+                            <div className="stock-ticker">{stock.ticker}</div>
+                            <div className="stock-change">
+                              {stock.change.toFixed(2)}%
+                            </div>
                           </div>
-                        </div>
-                      ))}
+                        );
+                      })}
                     </div>
                   </div>
                 )

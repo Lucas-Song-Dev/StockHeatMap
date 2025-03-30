@@ -4,14 +4,14 @@ import "./globals.css";
 import ClientBody from "./ClientBody";
 
 const lato = Lato({
-  weight: ['400', '700', '900'],
+  weight: ["400", "700", "900"],
   variable: "--font-lato",
   subsets: ["latin", "latin-ext"],
 });
 
 export const metadata: Metadata = {
-  title: "Stock Market Map | FinViz Clone",
-  description: "Stock screener for investors and traders, financial visualizations.",
+  title: "Stock Market Map | Stk-market Clone",
+  description: "Stock screener for investors and traders, .",
 };
 
 export default function RootLayout({
@@ -21,9 +21,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${lato.variable}`}>
-      <ClientBody>
-        {children}
-      </ClientBody>
+      <ClientBody>{children}</ClientBody>
     </html>
   );
 }

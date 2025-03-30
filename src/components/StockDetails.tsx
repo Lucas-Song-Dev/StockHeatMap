@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef } from "react";
 
 type StockData = {
   ticker: string;
@@ -32,7 +32,7 @@ export default function StockDetails({ stock, onClose }: StockDetailsProps) {
 
   // Format percentage with sign
   const formatPercentage = (value: number): string => {
-    const sign = value > 0 ? '+' : '';
+    const sign = value > 0 ? "+" : "";
     return `${sign}${value.toFixed(2)}%`;
   };
 
@@ -49,14 +49,17 @@ export default function StockDetails({ stock, onClose }: StockDetailsProps) {
   // Close when clicking outside
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (detailsRef.current && !detailsRef.current.contains(event.target as Node)) {
+      if (
+        detailsRef.current &&
+        !detailsRef.current.contains(event.target as Node)
+      ) {
         onClose();
       }
     }
 
-    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [onClose]);
 
@@ -73,29 +76,34 @@ export default function StockDetails({ stock, onClose }: StockDetailsProps) {
             <h2 className="text-2xl font-bold text-white">{stock.ticker}</h2>
             <p className="text-[#61697a]">{stock.sector}</p>
           </div>
-          <button
-            onClick={onClose}
-            className="text-[#61697a] hover:text-white"
-          >
+          <button onClick={onClose} className="text-[#61697a] hover:text-white">
             ✕
           </button>
         </div>
 
         <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="bg-[#2b2d3c] p-3 rounded">
+          <div className="bg-[#83afa7] p-3 rounded">
             <div className="flex justify-between mb-2">
               <span className="text-[#61697a]">Price</span>
-              <span className="text-white font-bold">${stockInfo.price.toFixed(2)}</span>
+              <span className="text-white font-bold">
+                ${stockInfo.price.toFixed(2)}
+              </span>
             </div>
             <div className="flex justify-between mb-2">
               <span className="text-[#61697a]">Change</span>
-              <span className={`font-bold ${stock.change >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+              <span
+                className={`font-bold ${
+                  stock.change >= 0 ? "text-green-500" : "text-red-500"
+                }`}
+              >
                 {formatPercentage(stock.change)}
               </span>
             </div>
             <div className="flex justify-between mb-2">
               <span className="text-[#61697a]">Day High</span>
-              <span className="text-white">${stockInfo.dayHigh.toFixed(2)}</span>
+              <span className="text-white">
+                ${stockInfo.dayHigh.toFixed(2)}
+              </span>
             </div>
             <div className="flex justify-between">
               <span className="text-[#61697a]">Day Low</span>
@@ -103,14 +111,18 @@ export default function StockDetails({ stock, onClose }: StockDetailsProps) {
             </div>
           </div>
 
-          <div className="bg-[#2b2d3c] p-3 rounded">
+          <div className="bg-[#83afa7] p-3 rounded">
             <div className="flex justify-between mb-2">
               <span className="text-[#61697a]">Volume</span>
-              <span className="text-white">{formatNumber(stockInfo.volume)}</span>
+              <span className="text-white">
+                {formatNumber(stockInfo.volume)}
+              </span>
             </div>
             <div className="flex justify-between mb-2">
               <span className="text-[#61697a]">Market Cap</span>
-              <span className="text-white">{formatMarketCap(stockInfo.marketCap)}</span>
+              <span className="text-white">
+                {formatMarketCap(stockInfo.marketCap)}
+              </span>
             </div>
             <div className="flex justify-between mb-2">
               <span className="text-[#61697a]">P/E Ratio</span>
@@ -118,15 +130,19 @@ export default function StockDetails({ stock, onClose }: StockDetailsProps) {
             </div>
             <div className="flex justify-between">
               <span className="text-[#61697a]">Dividend</span>
-              <span className="text-white">{stockInfo.dividend.toFixed(2)}%</span>
+              <span className="text-white">
+                {stockInfo.dividend.toFixed(2)}%
+              </span>
             </div>
           </div>
         </div>
 
-        <div className="mt-4 bg-[#2b2d3c] p-3 rounded">
+        <div className="mt-4 bg-[#83afa7] p-3 rounded">
           <h3 className="text-white font-bold mb-2">Performance Chart</h3>
           <div className="h-40 bg-[#1e1e1e] rounded flex items-center justify-center">
-            <p className="text-[#61697a]">Chart Placeholder - Premium Feature</p>
+            <p className="text-[#61697a]">
+              Chart Placeholder - Premium Feature
+            </p>
           </div>
         </div>
 

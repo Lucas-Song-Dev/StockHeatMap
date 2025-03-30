@@ -8,8 +8,8 @@ import {
   ReactNode,
 } from "react";
 import {
-  StockQuote,
-  getBatchStockQuotes,
+  StockData,
+  getBatchStockDatas,
   getCompanyOverview,
 } from "@/services/stockService";
 
@@ -122,14 +122,14 @@ export function StockProvider({ children }: StockProviderProps) {
       const allTickers = sectorTickers.flatMap((sector) => sector.tickers);
 
       // Fetch quotes for all tickers
-      const quotes = await getBatchStockQuotes(allTickers);
+      const quotes = await getBatchStockDatas(allTickers);
 
       if (quotes.length === 0) {
         throw new Error("Could not fetch stock data.");
       }
 
       // Create a map of ticker to quote for easy lookup
-      const quoteMap = new Map<string, StockQuote>();
+      const quoteMap = new Map<string, StockData>();
       quotes.forEach((quote) => {
         quoteMap.set(quote.symbol, quote);
       });

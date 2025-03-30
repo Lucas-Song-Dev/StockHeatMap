@@ -1,55 +1,12 @@
 // Constants
 const API_KEY = process.env.NEXT_PUBLIC_ALPHAVANTAGE_API_KEY || 'demo';
 const BASE_URL = 'http://localhost:5000/api/stocks';
-
-// Types
-export type StockQuote = {
-  symbol: string;
-  price: number;
-  change: number;
-  change_percent: number;
-  volume: number;
-  timestamp: string;
-};
-
-export type GlobalQuote = {
-  '01. symbol': string;
-  '02. open': string;
-  '03. high': string;
-  '04. low': string;
-  '05. price': string;
-  '06. volume': string;
-  '07. latest trading day': string;
-  '08. previous close': string;
-  '09. change': string;
-  '10. change percent': string;
-};
-
-export type CompanyOverview = {
-  Symbol: string;
-  Name: string;
-  Description: string;
-  Exchange: string;
-  Currency: string;
-  Country: string;
-  Sector: string;
-  Industry: string;
-  MarketCapitalization: string;
-  PERatio: string;
-  DividendYield: string;
-  EPS: string;
-  // ... other fields
-};
-
-interface StockResponse {
-  items: StockQuote[];
-  timestamp: string;
-}
+import { StockData, SectorData, GlobalQuote, CompanyOverview , StockResponse} from "../types";
 
 /**
  * Get a real-time quote for a specific stock
  */
-export async function getStockQuote(symbol: string): Promise<StockQuote | null> {
+export async function getStockData(symbol: string): Promise<StockData | null> {
   try {
     const response = await fetch(
       `${BASE_URL}?function=GLOBAL_QUOTE&symbol=${symbol}&apikey=${API_KEY}`
@@ -69,12 +26,10 @@ export async function getStockQuote(symbol: string): Promise<StockQuote | null> 
     const quote = data['Global Quote'] as GlobalQuote;
 
     return {
-      symbol: quote['01. symbol'],
+      ticker: quote['01. symbol'],
       price: parseFloat(quote['05. price']),
       change: parseFloat(quote['09. change']),
       change_percent: parseFloat(quote['10. change percent'].replace('%', '')),
-      volume: parseInt(quote['06. volume']),
-      timestamp: quote['07. latest trading day'],
     };
 
   } catch (error) {
@@ -122,7 +77,7 @@ export const fetchStockData = async (
   symbols?: string,
   sector?: string,
   limit?: number
-): Promise<StockQuote[]> => {
+): Promise<SectorData[]> => {
   try {
     // Build query parameters
     const params = new URLSearchParams();
@@ -131,9 +86,9 @@ export const fetchStockData = async (
     if (limit) params.append('limit', limit.toString());
     
     const queryString = params.toString();
-    const url = `http://localhost:5000/api/stocks${queryString ? `?${queryString}` : ''}`;
+    const url = `http://localhost:5000/api/stocks-by-sector${queryString ? `?${queryString}` : ''}`;
     
-    console.log("🚀 ~ `http://localhost:5000/api/stocks${queryString ? `?${queryString}` : ''}`:", `http://localhost:5000/api/stocks${queryString ? `?${queryString}` : ''}`)
+    console.log("🚀 ~ url:", url)
     const response = await fetch(url);
     
     if (!response.ok) {
@@ -141,8 +96,8 @@ export const fetchStockData = async (
     }
     
     const data: StockResponse = await response.json();
-    console.log("🚀 ~ data:", data.items)
-    return data.items || [];
+    console.log("🚀 ~ data:", data.sectors)
+    return data.sectors || [];
   } catch (error) {
     console.error('Error fetching stock data:', error);
     throw error;
@@ -152,18 +107,18 @@ export const fetchStockData = async (
 /**
  * Batch fetch real-time quotes for multiple stocks
  */
-export async function getBatchStockQuotes(symbols: string[]): Promise<StockQuote[]> {
+export async function getBatchStockDatas(symbols: string[]): Promise<StockData[]> {
   // Alpha Vantage doesn't provide a true batch endpoint, so we need to make individual requests
   // This is okay for the free tier which allows 25-500 requests per day
   try {
-    const promises = symbols.map(symbol => getStockQuote(symbol));
+    const promises = symbols.map(symbol => getStockData(symbol));
     const results = await Promise.allSettled(promises);
 
     return results
-      .filter((result): result is PromiseFulfilledResult<StockQuote | null> =>
+      .filter((result): result is PromiseFulfilledResult<StockData | null> =>
         result.status === 'fulfilled' && result.value !== null
       )
-      .map(result => result.value as StockQuote);
+      .map(result => result.value as StockData);
 
   } catch (error) {
     console.error('Error fetching batch stock quotes:', error);
@@ -175,7 +130,7 @@ export async function getBatchStockQuotes(symbols: string[]): Promise<StockQuote
  * Get the top gainers and losers for the day
  * Note: This is not a real Alpha Vantage endpoint, we'll simulate it with our data
  */
-export async function getTopMovers(count: number = 20): Promise<{ gainers: StockQuote[], losers: StockQuote[] }> {
+export async function getTopMovers(count: number = 20): Promise<{ gainers: StockData[], losers: StockData[] }> {
   // For a real implementation, you'd need to:
   // 1. Fetch quotes for multiple stocks
   // 2. Sort them by change percentage
@@ -185,7 +140,7 @@ export async function getTopMovers(count: number = 20): Promise<{ gainers: Stock
   const majorStocks = ['AAPL', 'MSFT', 'GOOGL', 'AMZN', 'META', 'TSLA', 'NVDA', 'JPM', 'JNJ', 'V', 'PG'];
 
   try {
-    const quotes = await getBatchStockQuotes(majorStocks);
+    const quotes = await getBatchStockDatas(majorStocks);
 
     // Sort by change percentage
     const sortedQuotes = [...quotes].sort((a, b) => b.change_percent - a.change_percent);

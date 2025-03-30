@@ -25,14 +25,14 @@
     --ring: 240 4.9% 83.9%;
     --radius: 0.25rem;
 
-    /* FinViz Colors */
-    --finviz-red: 0 75% 52%;
-    --finviz-green: 145 63% 42%;
-    --finviz-neutral: 0 0% 50%;
-    --finviz-dark-bg: 230 10% 16%;
-    --finviz-header-bg: 220 13% 18%;
-    --finviz-text: 0 0% 100%;
-    --finviz-text-secondary: 0 0% 70%;
+    /* Stk-market Colors */
+    --Stk-market-red: 0 75% 52%;
+    --Stk-market-green: 145 63% 42%;
+    --Stk-market-neutral: 0 0% 50%;
+    --Stk-market-dark-bg: 230 10% 16%;
+    --Stk-market-header-bg: 220 13% 18%;
+    --Stk-market-text: 0 0% 100%;
+    --Stk-market-text-secondary: 0 0% 70%;
   }
 }
 
@@ -47,7 +47,7 @@
 }
 
 @layer components {
-  /* FinViz Specific Components */
+  /* Stk-market Specific Components */
   .heatmap-container {
     @apply w-full p-4 bg-[#242632] rounded;
   }
@@ -61,7 +61,7 @@
   }
 
   .stock-cell {
-    @apply relative p-2 text-center transition-all duration-200 cursor-pointer min-h-[60px] flex flex-col justify-center;
+    @apply relative p-2 text-center transition-all duration-200 cursor-pointer flex flex-col justify-center border border-[#FFFFF0] mr-1 mb-1;
   }
 
   .stock-ticker {
@@ -72,7 +72,7 @@
     @apply text-xs opacity-80;
   }
 
-  /* Stock change percentages - more realistic FinViz colors */
+  /* Stock change percentages - more realistic Stk-market colors */
   .change-negative-3 {
     @apply bg-[#be0000];
   }
@@ -123,7 +123,7 @@
   /* Responsive adjustments */
   @media (max-width: 768px) {
     .stock-cell {
-      @apply p-1 min-h-[50px];
+      @apply p-1;
     }
 
     .stock-ticker {
