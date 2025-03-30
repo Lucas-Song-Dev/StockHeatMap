@@ -1,7 +1,17 @@
 "use client";
 
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { StockQuote, getBatchStockQuotes, getCompanyOverview } from '@/services/stockService';
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode,
+} from "react";
+import {
+  StockQuote,
+  getBatchStockQuotes,
+  getCompanyOverview,
+} from "@/services/stockService";
 
 // Define the stock data structure we'll use in the heatmap
 export type HeatmapStockData = {
@@ -9,7 +19,7 @@ export type HeatmapStockData = {
   name?: string;
   price?: number;
   change: number;
-  changePercent: number;
+  change_percent: number;
   marketCap?: number;
   sector: string;
   industry?: string;
@@ -47,28 +57,50 @@ const StockContext = createContext<StockContextProps>(initialContextValue);
 const sectorTickers = [
   {
     sector: "TECHNOLOGY",
-    tickers: ["MSFT", "AAPL", "GOOGL", "META", "NVDA", "ORCL", "ADBE", "CRM", "INTC", "AMD"]
+    tickers: [
+      "MSFT",
+      "AAPL",
+      "GOOGL",
+      "META",
+      "NVDA",
+      "ORCL",
+      "ADBE",
+      "CRM",
+      "INTC",
+      "AMD",
+    ],
   },
   {
     sector: "CONSUMER CYCLICAL",
-    tickers: ["AMZN", "TSLA", "BABA", "HD", "MCD", "NKE", "SBUX"]
+    tickers: ["AMZN", "TSLA", "BABA", "HD", "MCD", "NKE", "SBUX"],
   },
   {
     sector: "COMMUNICATION SERVICES",
-    tickers: ["NFLX", "DIS", "CMCSA", "T", "VZ"]
+    tickers: ["NFLX", "DIS", "CMCSA", "T", "VZ"],
   },
   {
     sector: "HEALTHCARE",
-    tickers: ["JNJ", "PFE", "UNH", "MRK", "ABT", "LLY"]
+    tickers: ["JNJ", "PFE", "UNH", "MRK", "ABT", "LLY"],
   },
   {
     sector: "FINANCIAL",
-    tickers: ["JPM", "BAC", "MA", "V", "WFC", "C", "GS"]
-  }
+    tickers: ["JPM", "BAC", "MA", "V", "WFC", "C", "GS"],
+  },
 ];
 
 // Major company tickers that should have larger boxes
-const majorTickers = ["MSFT", "AAPL", "GOOGL", "META", "NVDA", "AMZN", "TSLA", "JPM", "JNJ", "V"];
+const majorTickers = [
+  "MSFT",
+  "AAPL",
+  "GOOGL",
+  "META",
+  "NVDA",
+  "AMZN",
+  "TSLA",
+  "JPM",
+  "JNJ",
+  "V",
+];
 
 type StockProviderProps = {
   children: ReactNode;
@@ -87,7 +119,7 @@ export function StockProvider({ children }: StockProviderProps) {
 
     try {
       // Collect all tickers to fetch
-      const allTickers = sectorTickers.flatMap(sector => sector.tickers);
+      const allTickers = sectorTickers.flatMap((sector) => sector.tickers);
 
       // Fetch quotes for all tickers
       const quotes = await getBatchStockQuotes(allTickers);
@@ -98,7 +130,7 @@ export function StockProvider({ children }: StockProviderProps) {
 
       // Create a map of ticker to quote for easy lookup
       const quoteMap = new Map<string, StockQuote>();
-      quotes.forEach(quote => {
+      quotes.forEach((quote) => {
         quoteMap.set(quote.symbol, quote);
       });
 
@@ -106,63 +138,82 @@ export function StockProvider({ children }: StockProviderProps) {
       // For demo purposes, we'll use predefined sector assignments
 
       // Build sector data
-      const newStockData: HeatmapSectorData[] = sectorTickers.map(sectorInfo => {
-        const sectorStocks: HeatmapStockData[] = sectorInfo.tickers
-          .filter(ticker => quoteMap.has(ticker))
-          .map(ticker => {
-            const quote = quoteMap.get(ticker)!;
+      const newStockData: HeatmapSectorData[] = sectorTickers.map(
+        (sectorInfo) => {
+          const sectorStocks: HeatmapStockData[] = sectorInfo.tickers
+            .filter((ticker) => quoteMap.has(ticker))
+            .map((ticker) => {
+              const quote = quoteMap.get(ticker)!;
 
-            // Special industry assignments by ticker (in a real app, this would come from the API)
-            let industry = "";
-            if (ticker === "MSFT" || ticker === "ORCL" || ticker === "ADBE") {
-              industry = "SOFTWARE - INFRASTRUCTURE";
-            } else if (ticker === "AAPL") {
-              industry = "CONSUMER ELECTRONICS";
-            } else if (ticker === "GOOGL" || ticker === "META") {
-              industry = "INTERNET CONTENT & INFORMATION";
-            } else if (ticker === "NVDA" || ticker === "AMD" || ticker === "INTC") {
-              industry = "SEMICONDUCTORS";
-            } else if (ticker === "CRM" || ticker === "INTU") {
-              industry = "SOFTWARE - APPLICATION";
-            } else if (ticker === "AMZN") {
-              industry = "INTERNET RETAIL";
-            } else if (ticker === "TSLA" || ticker === "GM" || ticker === "F") {
-              industry = "AUTO MANUFACTURERS";
-            } else if (ticker === "NFLX" || ticker === "DIS") {
-              industry = "ENTERTAINMENT";
-            } else if (ticker === "T" || ticker === "VZ") {
-              industry = "TELECOM SERVICES";
-            } else if (ticker === "JNJ" || ticker === "PFE" || ticker === "MRK" || ticker === "LLY") {
-              industry = "DRUG MANUFACTURERS - GENERAL";
-            } else if (ticker === "JPM" || ticker === "BAC" || ticker === "WFC" || ticker === "C") {
-              industry = "BANKS - DIVERSIFIED";
-            } else if (ticker === "MA" || ticker === "V") {
-              industry = "CREDIT SERVICES";
-            } else {
-              industry = "OTHER";
-            }
+              // Special industry assignments by ticker (in a real app, this would come from the API)
+              let industry = "";
+              if (ticker === "MSFT" || ticker === "ORCL" || ticker === "ADBE") {
+                industry = "SOFTWARE - INFRASTRUCTURE";
+              } else if (ticker === "AAPL") {
+                industry = "CONSUMER ELECTRONICS";
+              } else if (ticker === "GOOGL" || ticker === "META") {
+                industry = "INTERNET CONTENT & INFORMATION";
+              } else if (
+                ticker === "NVDA" ||
+                ticker === "AMD" ||
+                ticker === "INTC"
+              ) {
+                industry = "SEMICONDUCTORS";
+              } else if (ticker === "CRM" || ticker === "INTU") {
+                industry = "SOFTWARE - APPLICATION";
+              } else if (ticker === "AMZN") {
+                industry = "INTERNET RETAIL";
+              } else if (
+                ticker === "TSLA" ||
+                ticker === "GM" ||
+                ticker === "F"
+              ) {
+                industry = "AUTO MANUFACTURERS";
+              } else if (ticker === "NFLX" || ticker === "DIS") {
+                industry = "ENTERTAINMENT";
+              } else if (ticker === "T" || ticker === "VZ") {
+                industry = "TELECOM SERVICES";
+              } else if (
+                ticker === "JNJ" ||
+                ticker === "PFE" ||
+                ticker === "MRK" ||
+                ticker === "LLY"
+              ) {
+                industry = "DRUG MANUFACTURERS - GENERAL";
+              } else if (
+                ticker === "JPM" ||
+                ticker === "BAC" ||
+                ticker === "WFC" ||
+                ticker === "C"
+              ) {
+                industry = "BANKS - DIVERSIFIED";
+              } else if (ticker === "MA" || ticker === "V") {
+                industry = "CREDIT SERVICES";
+              } else {
+                industry = "OTHER";
+              }
 
-            return {
-              ticker,
-              price: quote.price,
-              change: quote.change,
-              changePercent: quote.changePercent,
-              volume: quote.volume,
-              sector: sectorInfo.sector,
-              industry,
-              isLarge: majorTickers.includes(ticker)
-            };
-          });
+              return {
+                ticker,
+                price: quote.price,
+                change: quote.change,
+                change_percent: quote.change_percent,
+                volume: quote.volume,
+                sector: sectorInfo.sector,
+                industry,
+                isLarge: majorTickers.includes(ticker),
+              };
+            });
 
-        return {
-          name: sectorInfo.sector,
-          stocks: sectorStocks
-        };
-      });
+          return {
+            name: sectorInfo.sector,
+            stocks: sectorStocks,
+          };
+        }
+      );
 
       setStockData(newStockData);
       setLastUpdated(new Date());
-
     } catch (err) {
       console.error("Error fetching stock data", err);
       setError(err instanceof Error ? err.message : "Unknown error occurred");
@@ -190,7 +241,7 @@ export function StockProvider({ children }: StockProviderProps) {
     loading,
     lastUpdated,
     error,
-    refreshData: fetchStockData
+    refreshData: fetchStockData,
   };
 
   return (
@@ -204,7 +255,7 @@ export function StockProvider({ children }: StockProviderProps) {
 export function useStockData() {
   const context = useContext(StockContext);
   if (context === undefined) {
-    throw new Error('useStockData must be used within a StockProvider');
+    throw new Error("useStockData must be used within a StockProvider");
   }
   return context;
 }
