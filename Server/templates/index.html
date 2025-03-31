@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Stock Market Heat Map</title>
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/static/css/styles.css" />
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>Stock Market Heat Map</h1>
+        <p>A visual representation of stock market performance data</p>
+      </div>
+
+      <div class="controls">
+        <form id="filter-form" class="filter-form">
+          <div class="form-group">
+            <label for="filter-symbols" class="form-label">Symbols</label>
+            <input
+              type="text"
+              id="filter-symbols"
+              class="form-control"
+              placeholder="e.g., AAPL,MSFT,GOOGL"
+            />
+          </div>
+          <div class="form-group">
+            <label for="filter-limit" class="form-label">Limit</label>
+            <input
+              type="number"
+              id="filter-limit"
+              class="form-control"
+              value="50"
+              min="5"
+              max="500"
+            />
+          </div>
+          <div class="form-group d-flex align-items-end">
+            <button type="submit" class="btn btn-primary">Apply Filters</button>
+          </div>
+        </form>
+        <div class="d-flex align-items-end">
+          <button id="refresh-button" class="btn btn-outline-secondary">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              fill="currentColor"
+              class="bi bi-arrow-clockwise"
+              viewBox="0 0 16 16"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"
+              />
+              <path
+                d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"
+              />
+            </svg>
+            Refresh
+          </button>
+        </div>
+      </div>
+
+      <div class="legend">
+        <div class="legend-item">
+          <div class="legend-color" style="background-color: #4e79a7"></div>
+          <span>Increase</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color" style="background-color: #e15759"></div>
+          <span>Decrease</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color" style="background-color: #79716b"></div>
+          <span>No Change</span>
+        </div>
+      </div>
+
+      <div class="info-bar">
+        <div id="data-timestamp">Loading...</div>
+        <div class="api-status">
+          Data source: <span id="api-status">Free API</span>
+        </div>
+      </div>
+
+      <div id="heatmap-container" class="heatmap-container">
+        <div class="loading-indicator">Loading stock data...</div>
+      </div>
+
+      <div class="mt-5 pt-3 border-top">
+        <h2>API Documentation</h2>
+        <p>
+          This heatmap is powered by a free stock data API. You can directly use
+          these endpoints for your own projects:
+        </p>
+
+        <div class="card mb-3">
+          <div class="card-header">
+            <h5 class="mb-0">GET /api/stocks-by-sector</h5>
+          </div>
+          <div class="card-body">
+            <p>
+              Get stock data grouped by sectors for the heatmap visualization.
+            </p>
+            <h6>Query Parameters:</h6>
+            <ul>
+              <li>
+                <code>symbols</code> - Optional comma-separated list of stock
+                symbols
+              </li>
+              <li>
+                <code>limit</code> - Optional limit of stocks to return
+                (default: 100)
+              </li>
+              <li>
+                <code>large_cap_threshold</code> - Optional market cap threshold
+                for isLarge flag (default: 100,000,000,000)
+              </li>
+            </ul>
+            <h6>Example:</h6>
+            <pre><code>/api/stocks-by-sector?symbols=AAPL,MSFT,GOOGL&limit=50</code></pre>
+          </div>
+        </div>
+
+        <div class="card mb-3">
+          <div class="card-header">
+            <h5 class="mb-0">GET /api/stocks</h5>
+          </div>
+          <div class="card-body">
+            <p>Get raw stock data for the specified symbols.</p>
+            <h6>Query Parameters:</h6>
+            <ul>
+              <li>
+                <code>symbols</code> - Optional comma-separated list of stock
+                symbols
+              </li>
+              <li><code>sector</code> - Optional sector filter</li>
+              <li>
+                <code>limit</code> - Optional limit of stocks to return
+                (default: 30)
+              </li>
+            </ul>
+            <h6>Example:</h6>
+            <pre><code>/api/stocks?symbols=AAPL,MSFT,GOOGL</code></pre>
+          </div>
+        </div>
+
+        <div class="card mb-3">
+          <div class="card-header">
+            <h5 class="mb-0">GET /api/historical</h5>
+          </div>
+          <div class="card-body">
+            <p>Get historical stock data for the specified symbols.</p>
+            <h6>Query Parameters:</h6>
+            <ul>
+              <li>
+                <code>symbols</code> - Required comma-separated list of stock
+                symbols
+              </li>
+              <li>
+                <code>days</code> - Optional number of days of historical data
+                (default: 30)
+              </li>
+            </ul>
+            <h6>Example:</h6>
+            <pre><code>/api/historical?symbols=AAPL,MSFT&days=60</code></pre>
+          </div>
+        </div>
+
+        <div class="card mb-3">
+          <div class="card-header">
+            <h5 class="mb-0">GET /api/sectors</h5>
+          </div>
+          <div class="card-body">
+            <p>Get performance data by sectors.</p>
+            <h6>Example:</h6>
+            <pre><code>/api/sectors</code></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- JavaScript Dependencies -->
+    <script src="/static/js/stockApi.js"></script>
+    <script src="/static/js/heatmap.js"></script>
+  </body>
+</html>
