@@ -17,14 +17,47 @@ FMP_API_KEY = os.environ.get("FMP_API_KEY", "demo")
 
 # Default symbols for initial data load
 DEFAULT_SYMBOLS = [
-    "AAPL", "MSFT", "GOOGL", "AMZN", "META", "TSLA", "NVDA", "JPM", 
-    "BAC", "WMT", "PG", "JNJ", "UNH", "HD", "INTC", "VZ", "DIS", 
-    "NFLX", "ADBE", "CRM", "CSCO", "PEP", "CMCSA", "COST", "ABT", 
-    "TMO", "ACN", "NKE", "AVGO", "TXN", "PYPL", "MA", "V", "XOM", 
-    "CVX", "MRK", "PFE", "KO", "MCD", "LLY", "ABBV", "GS", "MS", 
-    "BLK", "T", "AMD", "BA", "LMT", "CAT", "DE", "HON", "UNP", 
-    "FDX", "UPS", "MMM", "DHR"
+    # Technology
+    "AAPL", "MSFT", "GOOGL", "AMZN", "META", "TSLA", "NVDA", "INTC", "AMD",
+    "CSCO", "IBM", "ORCL", "ADBE", "CRM", "TXN", "AVGO", "QCOM", "PYPL", "NOW",
+    "SNOW", "ZS", "PANW", "MDB", "TTD", "DOCU", "CRWD", "PLTR", "SHOP", "SQ",
+    "DDOG", "NET", "TWLO", "U", "ROKU", "FSLY",
+
+    # Financials
+    "JPM", "BAC", "GS", "MS", "BLK", "C", "WFC", "AXP", "SCHW", "BRK.B",
+    "SPGI", "ICE", "VIRT", "FIS", "FISV", "TROW", "RJF", "ALLY",
+
+    # Consumer Goods & Retail
+    "WMT", "PG", "KO", "PEP", "COST", "MCD", "NKE", "SBUX", "TGT", "HD", "LOW",
+    "DG", "DLTR", "YUM", "TIF", "UL", "KHC", "GIS", "HSY", "CLX", "EL", "MNST",
+
+    # Healthcare & Pharmaceuticals
+    "JNJ", "PFE", "MRK", "LLY", "ABBV", "TMO", "ABT", "GILD", "BMY", "REGN",
+    "VRTX", "ISRG", "CVS", "HUM", "UNH", "CNC", "CI", "ZBH", "IDXX", "DHR",
+    "EW", "SYK", "BSX", "BIIB", "IQV", "TDOC",
+
+    # Industrials & Transportation
+    "BA", "LMT", "CAT", "DE", "HON", "GE", "UPS", "FDX", "UNP", "MMM",
+    "RTX", "EMR", "ITW", "GD", "CSX", "NSC", "CARR", "OTIS", "WM", "RSG",
+
+    # Energy & Utilities
+    "XOM", "CVX", "OXY", "SLB", "DUK", "NEE", "SO", "D", "AEP", "EXC",
+    "PXD", "EOG", "MPC", "VLO", "PSX", "HAL", "BKR", "FANG", "ENB", "ET",
+
+    # Communication & Media
+    "DIS", "NFLX", "CMCSA", "T", "VZ", "TMUS", "CHTR", "FOX", "FWONA",
+    "SPOT", "LYV", "WBD", "EA", "TTWO", "ATVI", "PARA",
+
+    # Payment Processors & FinTech
+    "MA", "V", "SQ", "FISV", "FIS", "AFRM", "UPST", "BILL", "ADYEN", "GPN",
+
+    # Real Estate & Miscellaneous
+    "SPG", "PLD", "AMT", "CCI", "O", "EQR", "AVB", "VTR", "DRE", "BXP",
+
+    # Automotive & Manufacturing
+    "GM", "F", "RIVN", "LCID", "NKLA", "TSLA", "NIO", "XPEV", "LI", "FREY"
 ]
+
 
 # Data source functions
 def get_alpha_vantage_data(symbols, function="GLOBAL_QUOTE"):
@@ -76,7 +109,8 @@ def get_yahoo_finance_data(symbols):
         results = []
         
         # Define a mapping for default sectors if needed
-        {
+        default_sectors = {
+            # Technology
             "AAPL": {"sector": "TECHNOLOGY", "industry": "CONSUMER ELECTRONICS"},
             "MSFT": {"sector": "TECHNOLOGY", "industry": "SOFTWARE"},
             "GOOGL": {"sector": "TECHNOLOGY", "industry": "INTERNET CONTENT & INFORMATION"},
@@ -84,55 +118,91 @@ def get_yahoo_finance_data(symbols):
             "META": {"sector": "TECHNOLOGY", "industry": "INTERNET CONTENT & INFORMATION"},
             "TSLA": {"sector": "CONSUMER CYCLICAL", "industry": "AUTO MANUFACTURERS"},
             "NVDA": {"sector": "TECHNOLOGY", "industry": "SEMICONDUCTORS"},
-            "JPM": {"sector": "FINANCIAL SERVICES", "industry": "BANKS"},
-            "BAC": {"sector": "FINANCIAL SERVICES", "industry": "BANKS"},
-            "WMT": {"sector": "CONSUMER DEFENSIVE", "industry": "DISCOUNT STORES"},
-            "PG": {"sector": "CONSUMER DEFENSIVE", "industry": "HOUSEHOLD PRODUCTS"},
-            "JNJ": {"sector": "HEALTHCARE", "industry": "DRUG MANUFACTURERS"},
-            "UNH": {"sector": "HEALTHCARE", "industry": "HEALTHCARE PLANS"},
-            "HD": {"sector": "CONSUMER CYCLICAL", "industry": "HOME IMPROVEMENT RETAIL"},
             "INTC": {"sector": "TECHNOLOGY", "industry": "SEMICONDUCTORS"},
-            "VZ": {"sector": "COMMUNICATION SERVICES", "industry": "TELECOM SERVICES"},
-            "DIS": {"sector": "COMMUNICATION SERVICES", "industry": "ENTERTAINMENT"},
-            "NFLX": {"sector": "COMMUNICATION SERVICES", "industry": "ENTERTAINMENT"},
+            "AMD": {"sector": "TECHNOLOGY", "industry": "SEMICONDUCTORS"},
+            "CSCO": {"sector": "TECHNOLOGY", "industry": "COMMUNICATION EQUIPMENT"},
+            "IBM": {"sector": "TECHNOLOGY", "industry": "INFORMATION TECHNOLOGY SERVICES"},
+            "ORCL": {"sector": "TECHNOLOGY", "industry": "SOFTWARE"},
             "ADBE": {"sector": "TECHNOLOGY", "industry": "SOFTWARE"},
             "CRM": {"sector": "TECHNOLOGY", "industry": "SOFTWARE"},
-            "CSCO": {"sector": "TECHNOLOGY", "industry": "COMMUNICATION EQUIPMENT"},
-            "PEP": {"sector": "CONSUMER DEFENSIVE", "industry": "BEVERAGES"},
-            "CMCSA": {"sector": "COMMUNICATION SERVICES", "industry": "ENTERTAINMENT"},
-            "COST": {"sector": "CONSUMER DEFENSIVE", "industry": "DISCOUNT STORES"},
-            "ABT": {"sector": "HEALTHCARE", "industry": "MEDICAL DEVICES"},
-            "TMO": {"sector": "HEALTHCARE", "industry": "DIAGNOSTICS & RESEARCH"},
-            "ACN": {"sector": "TECHNOLOGY", "industry": "INFORMATION TECHNOLOGY SERVICES"},
-            "NKE": {"sector": "CONSUMER CYCLICAL", "industry": "FOOTWEAR & ACCESSORIES"},
-            "AVGO": {"sector": "TECHNOLOGY", "industry": "SEMICONDUCTORS"},
             "TXN": {"sector": "TECHNOLOGY", "industry": "SEMICONDUCTORS"},
+            "AVGO": {"sector": "TECHNOLOGY", "industry": "SEMICONDUCTORS"},
+            "QCOM": {"sector": "TECHNOLOGY", "industry": "SEMICONDUCTORS"},
             "PYPL": {"sector": "FINANCIAL SERVICES", "industry": "CREDIT SERVICES"},
-            "MA": {"sector": "FINANCIAL SERVICES", "industry": "CREDIT SERVICES"},
-            "V": {"sector": "FINANCIAL SERVICES", "industry": "CREDIT SERVICES"},
-            "XOM": {"sector": "ENERGY", "industry": "OIL & GAS INTEGRATED"},
-            "CVX": {"sector": "ENERGY", "industry": "OIL & GAS INTEGRATED"},
-            "MRK": {"sector": "HEALTHCARE", "industry": "DRUG MANUFACTURERS"},
-            "PFE": {"sector": "HEALTHCARE", "industry": "DRUG MANUFACTURERS"},
-            "KO": {"sector": "CONSUMER DEFENSIVE", "industry": "BEVERAGES"},
-            "MCD": {"sector": "CONSUMER CYCLICAL", "industry": "RESTAURANTS"},
-            "LLY": {"sector": "HEALTHCARE", "industry": "DRUG MANUFACTURERS"},
-            "ABBV": {"sector": "HEALTHCARE", "industry": "DRUG MANUFACTURERS"},
+            "NOW": {"sector": "TECHNOLOGY", "industry": "SOFTWARE"},
+            "SNOW": {"sector": "TECHNOLOGY", "industry": "DATA INFRASTRUCTURE"},
+            "ZS": {"sector": "TECHNOLOGY", "industry": "CYBERSECURITY"},
+            "PANW": {"sector": "TECHNOLOGY", "industry": "CYBERSECURITY"},
+            "MDB": {"sector": "TECHNOLOGY", "industry": "DATABASE MANAGEMENT"},
+            "TTD": {"sector": "TECHNOLOGY", "industry": "DIGITAL ADVERTISING"},
+            "DOCU": {"sector": "TECHNOLOGY", "industry": "CLOUD COMPUTING"},
+            "CRWD": {"sector": "TECHNOLOGY", "industry": "CYBERSECURITY"},
+            "PLTR": {"sector": "TECHNOLOGY", "industry": "BIG DATA"},
+            "SHOP": {"sector": "TECHNOLOGY", "industry": "E-COMMERCE"},
+            "SQ": {"sector": "TECHNOLOGY", "industry": "FINTECH"},
+            "DDOG": {"sector": "TECHNOLOGY", "industry": "CLOUD MONITORING"},
+            "NET": {"sector": "TECHNOLOGY", "industry": "CLOUD COMPUTING"},
+            "TWLO": {"sector": "TECHNOLOGY", "industry": "COMMUNICATION SERVICES"},
+            "U": {"sector": "TECHNOLOGY", "industry": "GAME DEVELOPMENT"},
+            "ROKU": {"sector": "TECHNOLOGY", "industry": "STREAMING MEDIA"},
+            
+            # Financials
+            "JPM": {"sector": "FINANCIAL SERVICES", "industry": "BANKS"},
+            "BAC": {"sector": "FINANCIAL SERVICES", "industry": "BANKS"},
             "GS": {"sector": "FINANCIAL SERVICES", "industry": "CAPITAL MARKETS"},
             "MS": {"sector": "FINANCIAL SERVICES", "industry": "CAPITAL MARKETS"},
             "BLK": {"sector": "FINANCIAL SERVICES", "industry": "ASSET MANAGEMENT"},
-            "T": {"sector": "COMMUNICATION SERVICES", "industry": "TELECOM SERVICES"},
-            "AMD": {"sector": "TECHNOLOGY", "industry": "SEMICONDUCTORS"},
+            "C": {"sector": "FINANCIAL SERVICES", "industry": "BANKS"},
+            "WFC": {"sector": "FINANCIAL SERVICES", "industry": "BANKS"},
+            "AXP": {"sector": "FINANCIAL SERVICES", "industry": "CREDIT SERVICES"},
+            "SCHW": {"sector": "FINANCIAL SERVICES", "industry": "BROKERAGE"},
+            "BRK.B": {"sector": "FINANCIAL SERVICES", "industry": "DIVERSIFIED FINANCIALS"},
+            
+            # Consumer Goods & Retail
+            "WMT": {"sector": "CONSUMER DEFENSIVE", "industry": "DISCOUNT STORES"},
+            "PG": {"sector": "CONSUMER DEFENSIVE", "industry": "HOUSEHOLD PRODUCTS"},
+            "KO": {"sector": "CONSUMER DEFENSIVE", "industry": "BEVERAGES"},
+            "PEP": {"sector": "CONSUMER DEFENSIVE", "industry": "BEVERAGES"},
+            "COST": {"sector": "CONSUMER DEFENSIVE", "industry": "DISCOUNT STORES"},
+            "MCD": {"sector": "CONSUMER CYCLICAL", "industry": "RESTAURANTS"},
+            "NKE": {"sector": "CONSUMER CYCLICAL", "industry": "FOOTWEAR & ACCESSORIES"},
+            "SBUX": {"sector": "CONSUMER CYCLICAL", "industry": "RESTAURANTS"},
+            "TGT": {"sector": "CONSUMER DEFENSIVE", "industry": "DEPARTMENT STORES"},
+            
+            # Healthcare
+            "JNJ": {"sector": "HEALTHCARE", "industry": "DRUG MANUFACTURERS"},
+            "PFE": {"sector": "HEALTHCARE", "industry": "DRUG MANUFACTURERS"},
+            "MRK": {"sector": "HEALTHCARE", "industry": "DRUG MANUFACTURERS"},
+            "LLY": {"sector": "HEALTHCARE", "industry": "DRUG MANUFACTURERS"},
+            "ABBV": {"sector": "HEALTHCARE", "industry": "DRUG MANUFACTURERS"},
+            "TMO": {"sector": "HEALTHCARE", "industry": "DIAGNOSTICS & RESEARCH"},
+            "ABT": {"sector": "HEALTHCARE", "industry": "MEDICAL DEVICES"},
+            "DHR": {"sector": "HEALTHCARE", "industry": "DIAGNOSTICS & RESEARCH"},
+            
+            # Industrials
             "BA": {"sector": "INDUSTRIALS", "industry": "AEROSPACE & DEFENSE"},
             "LMT": {"sector": "INDUSTRIALS", "industry": "AEROSPACE & DEFENSE"},
             "CAT": {"sector": "INDUSTRIALS", "industry": "FARM & HEAVY CONSTRUCTION MACHINERY"},
             "DE": {"sector": "INDUSTRIALS", "industry": "FARM & HEAVY CONSTRUCTION MACHINERY"},
             "HON": {"sector": "INDUSTRIALS", "industry": "DIVERSIFIED INDUSTRIALS"},
-            "UNP": {"sector": "INDUSTRIALS", "industry": "RAILROADS"},
-            "FDX": {"sector": "INDUSTRIALS", "industry": "INTEGRATED FREIGHT & LOGISTICS"},
             "UPS": {"sector": "INDUSTRIALS", "industry": "INTEGRATED FREIGHT & LOGISTICS"},
-            "MMM": {"sector": "INDUSTRIALS", "industry": "SPECIALTY INDUSTRIAL MACHINERY"},
-            "DHR": {"sector": "HEALTHCARE", "industry": "DIAGNOSTICS & RESEARCH"}
+            
+            # Energy
+            "XOM": {"sector": "ENERGY", "industry": "OIL & GAS INTEGRATED"},
+            "CVX": {"sector": "ENERGY", "industry": "OIL & GAS INTEGRATED"},
+            "OXY": {"sector": "ENERGY", "industry": "OIL & GAS EXPLORATION"},
+            
+            # Communication & Media
+            "DIS": {"sector": "COMMUNICATION SERVICES", "industry": "ENTERTAINMENT"},
+            "NFLX": {"sector": "COMMUNICATION SERVICES", "industry": "ENTERTAINMENT"},
+            "CMCSA": {"sector": "COMMUNICATION SERVICES", "industry": "ENTERTAINMENT"},
+            "T": {"sector": "COMMUNICATION SERVICES", "industry": "TELECOM SERVICES"},
+            "VZ": {"sector": "COMMUNICATION SERVICES", "industry": "TELECOM SERVICES"},
+            "TMUS": {"sector": "COMMUNICATION SERVICES", "industry": "WIRELESS CARRIERS"},
+            
+            # Miscellaneous
+            "SPG": {"sector": "REAL ESTATE", "industry": "REITs"},
+            "PLD": {"sector": "REAL ESTATE", "industry": "REITs"},
         }
 
 
@@ -144,6 +214,7 @@ def get_yahoo_finance_data(symbols):
             try:
                 # Get ticker information one at a time
                 ticker = yf.Ticker(symbol)
+                print("🚀 ~ ticker:", ticker)
                 info = ticker.info
                 
                 # Extract sector and industry
