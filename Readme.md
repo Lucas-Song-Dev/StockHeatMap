@@ -2,7 +2,8 @@
 
 A powerful web-based tool for visualizing stock market momentum across different sectors and individual stocks. Compare performance against the S&P 500 and sector benchmarks with an intuitive, color-coded heat map interface.
 
-![Stock Heat Map Visualization](https://example.com/heatmap-screenshot.png)
+![Screenshot 2025-03-30 005442](https://github.com/user-attachments/assets/4d027709-dd95-47f9-b394-91e13f408fa3)
+
 
 ## Features
 
